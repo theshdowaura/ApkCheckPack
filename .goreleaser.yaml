@@ -1,0 +1,51 @@
+version: 2
+project_name: ApkCheckPack
+
+before:
+  hooks:
+    - go vet ./...
+    - go test ./...
+
+builds:
+  - id: apkcheckpack
+    main: ./src
+    binary: ApkCheckPack
+    ldflags:
+      - -s -w -buildid=
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    flags:
+      - -trimpath
+
+archives:
+  - id: release-archive
+    ids:
+      - apkcheckpack
+    formats:
+      - zip
+    wrap_in_directory: true
+    files:
+      - none*
+
+checksum:
+  name_template: checksums.txt
+  algorithm: sha256
+
+release:
+  draft: false
+  prerelease: false
+
+changelog:
+  sort: desc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
+      - '^chore:'
